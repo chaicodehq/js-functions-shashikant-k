@@ -45,13 +45,64 @@
  *   pricer("gold", true)  // => 200 * 1.5 * 1.3 = 390
  */
 export function createDialogueWriter(genre) {
-  // Your code here
+  const dialogues = {
+    action: (hero, villain) => `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`,
+    romance: (hero, villain) => `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`,
+    comedy: (hero, villain) => `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`,
+    drama: (hero, villain) => `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`
+  };
+
+  if (!dialogues.hasOwnProperty(genre)) {
+    return null;
+  }
+
+  return (hero, villain) => {
+    if (!hero || !villain || hero.trim() === '' || villain.trim() === '') {
+      return "...";
+    }
+    return dialogues[genre](hero, villain);
+  };
 }
 
 export function createTicketPricer(basePrice) {
-  // Your code here
+  if (typeof basePrice !== 'number' || basePrice <= 0) {
+    return null;
+  }
+
+  const seatMultipliers = {
+    silver: 1,
+    gold: 1.5,
+    platinum: 2
+  };
+
+  return (seatType, isWeekend = false) => {
+    if (!seatMultipliers.hasOwnProperty(seatType)) {
+      return null;
+    }
+
+    let price = basePrice * seatMultipliers[seatType];
+    if (isWeekend) {
+      price *= 1.3;
+    }
+
+    return Math.round(price);
+  };
 }
 
 export function createRatingCalculator(weights) {
-  // Your code here
+  if (typeof weights !== 'object' || weights === null || Array.isArray(weights)) {
+    return null;
+  }
+
+  return (scores) => {
+    let weightedSum = 0;
+
+    for (const key in weights) {
+      if (scores.hasOwnProperty(key) && weights.hasOwnProperty(key)) {
+        weightedSum += scores[key] * weights[key];
+      }
+    }
+
+    return parseFloat(weightedSum.toFixed(1));
+  };
 }
